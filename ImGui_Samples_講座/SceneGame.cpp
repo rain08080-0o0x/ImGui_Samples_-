@@ -143,7 +143,9 @@ void SceneGame::Draw()
 	SetupRenderState();
 	ApplyCamera();
 	DrawSceneObjects();
-	DrawEditor();
+	// ImGui•`‰æ
+	
+	//DrawEditor();
 }
 
 void SceneGame::SetupRenderState() const

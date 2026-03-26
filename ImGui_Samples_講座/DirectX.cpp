@@ -221,7 +221,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	}
 	SetSamplerState(SAMPLER_LINEAR);
 
-	InitImGui(hWnd);
+	// ImGuiの初期化
 
 	return S_OK;
 }
@@ -229,7 +229,6 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 void UninitDirectX()
 {
 	// 先に ImGui を終了させる（D3Dリソース解放の前）
-	ShutdownImGui();
 
 	SAFE_DELETE(g_pDSV);
 	SAFE_DELETE(g_pRTV);
@@ -254,7 +253,7 @@ void UninitDirectX()
 void BeginDrawDirectX()
 {
 	// ImGui フレーム開始
-	BeginImGuiFrame();
+
 	float color[4] = { 0.08f, 0.10f, 0.14f, 1.0f };
 	g_pRTV->Clear(color);
 	g_pDSV->Clear();
@@ -262,7 +261,7 @@ void BeginDrawDirectX()
 void EndDrawDirectX()
 {
 	// ImGui の描画
-	RenderImGuiDrawData();
+
 	g_pSwapChain->Present(1, 0);
 }
 
@@ -364,6 +363,8 @@ void SetSamplerState(SamplerState state)
 
 
 // ここからImGui関連処理
+
+// ImGuiの初期化
 void InitImGui(HWND hWnd)
 {
 	if (g_ImGuiInitialized) return;
@@ -384,7 +385,7 @@ void InitImGui(HWND hWnd)
 	}
 	g_ImGuiInitialized = true;
 }
-
+// ImGuiの終了処理
 void ShutdownImGui()
 {
 	if (!g_ImGuiInitialized) return;
@@ -395,7 +396,7 @@ void ShutdownImGui()
 
 	g_ImGuiInitialized = false;
 }
-
+// ImGuiのフレーム
 void BeginImGuiFrame()
 {
 	if (!g_ImGuiInitialized) return;
@@ -405,6 +406,7 @@ void BeginImGuiFrame()
 	ImGui::NewFrame();
 }
 
+// ImGuiの描画処理
 void RenderImGuiDrawData()
 {
 	if (!g_ImGuiInitialized) return;
