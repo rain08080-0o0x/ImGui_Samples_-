@@ -1,41 +1,58 @@
-# Prerequisites
-*.d
+# Visual Studio local state
+.vs/
+*.suo
+*.user
+*.userosscache
+*.VC.db
+*.VC.VC.opendb
+*.opendb
+*.sdf
+*.opensdf
+*.ipch
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
+# Visual Studio project/solution files (ignored by request)
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# Build outputs
+Debug/
+Release/
+x64/
+x86/
+Win32/
+[Bb]in/
+[Oo]bj/
 *.obj
-
-# Precompiled Headers
-*.gch
+*.o
+*.lo
+*.slo
 *.pch
-
-# Linker files
 *.ilk
-
-# Debugger Files
+*.idb
 *.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
 *.lib
-
-# Executables
+*.exp
+*.dll
 *.exe
 *.out
 *.app
+*.recipe
+*.tlog
+*.lastbuildstate
+*.log
 
-# debug information files
+# ImGui / local runtime files
+imgui.ini
+
+# Generic native artifacts
+*.d
 *.dwo
+*.gch
+*.mod
+*.smod
+*.a
+*.la
+*.lai
+*.so
+*.dylib
