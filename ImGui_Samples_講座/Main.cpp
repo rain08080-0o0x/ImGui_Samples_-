@@ -1,9 +1,8 @@
 #include "Main.h"
 
 #include "DirectX.h"
-#include "Geometory.h"
 #include "Scene.h"
-#include "SceneGame.h"
+#include "SceneImGuiLecture.h"
 
 namespace
 {
@@ -18,8 +17,7 @@ HRESULT Init(HWND hWnd, UINT width, UINT height)
 		return hr;
 	}
 
-	Geometory::Init();
-	g_pScene = new SceneGame();
+	g_pScene = new SceneImGuiLecture();
 	return S_OK;
 }
 
@@ -31,7 +29,6 @@ void Uninit()
 		g_pScene = nullptr;
 	}
 
-	Geometory::Uninit();
 	UninitDirectX();
 }
 

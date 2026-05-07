@@ -18,6 +18,37 @@ ID3D11SamplerState*			g_pSamplerState[SAMPLER_MAX];
 // ImGui初期化フラグ
 static bool g_ImGuiInitialized = false;
 
+namespace
+{
+	bool FileExists(const char* path)
+	{
+		const DWORD attributes = GetFileAttributesA(path);
+		return attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY) == 0;
+	}
+
+	const char* FindImGuiFontPath()
+	{
+		static const char* kCandidates[] = {
+			"Assets/Fonts/meiryo.ttc",
+			"Assets/Fonts/meiryob.ttc",
+			"../Assets/Fonts/meiryo.ttc",
+			"../Assets/Fonts/meiryob.ttc",
+			"../../Assets/Fonts/meiryo.ttc",
+			"../../Assets/Fonts/meiryob.ttc",
+		};
+
+		for (const char* candidate : kCandidates)
+		{
+			if (FileExists(candidate))
+			{
+				return candidate;
+			}
+		}
+
+		return nullptr;
+	}
+}
+
 
 ID3D11Device* GetDevice()
 {
@@ -221,7 +252,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	}
 	SetSamplerState(SAMPLER_LINEAR);
 
-	// ImGuiの初期化
+	InitImGui(hWnd);
 
 	return S_OK;
 }
@@ -229,6 +260,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 void UninitDirectX()
 {
 	// 先に ImGui を終了させる（D3Dリソース解放の前）
+	ShutdownImGui();
 
 	SAFE_DELETE(g_pDSV);
 	SAFE_DELETE(g_pRTV);
@@ -252,8 +284,10 @@ void UninitDirectX()
 
 void BeginDrawDirectX()
 {
-	// ImGui フレーム開始
+	SetRenderTargets(1, &g_pRTV, g_pDSV);
 
+	// ImGui フレーム開始
+	BeginImGuiFrame();
 	float color[4] = { 0.08f, 0.10f, 0.14f, 1.0f };
 	g_pRTV->Clear(color);
 	g_pDSV->Clear();
@@ -261,7 +295,7 @@ void BeginDrawDirectX()
 void EndDrawDirectX()
 {
 	// ImGui の描画
-
+	RenderImGuiDrawData();
 	g_pSwapChain->Present(1, 0);
 }
 
@@ -363,8 +397,6 @@ void SetSamplerState(SamplerState state)
 
 
 // ここからImGui関連処理
-
-// ImGuiの初期化
 void InitImGui(HWND hWnd)
 {
 	if (g_ImGuiInitialized) return;
@@ -375,17 +407,31 @@ void InitImGui(HWND hWnd)
 
 	ImGui::StyleColorsDark();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
 
 	ImGui_ImplWin32_Init(hWnd);
 	ImGui_ImplDX11_Init(g_pDevice, g_pContext);
 	float fontSize = 18.0f;
-	ImFont* font = io.Fonts->AddFontFromFileTTF("Assets/Fonts/meiryob.ttc", fontSize, NULL, io.Fonts->GetGlyphRangesJapanese());
+	ImFont* font = nullptr;
+	const char* fontPath = FindImGuiFontPath();
+	if (fontPath != nullptr)
+	{
+		font = io.Fonts->AddFontFromFileTTF(fontPath, fontSize, NULL, io.Fonts->GetGlyphRangesJapanese());
+	}
 	if (font == nullptr) {
 		io.Fonts->AddFontDefault();
 	}
 	g_ImGuiInitialized = true;
 }
-// ImGuiの終了処理
+
 void ShutdownImGui()
 {
 	if (!g_ImGuiInitialized) return;
@@ -396,7 +442,7 @@ void ShutdownImGui()
 
 	g_ImGuiInitialized = false;
 }
-// ImGuiのフレーム
+
 void BeginImGuiFrame()
 {
 	if (!g_ImGuiInitialized) return;
@@ -406,11 +452,20 @@ void BeginImGuiFrame()
 	ImGui::NewFrame();
 }
 
-// ImGuiの描画処理
 void RenderImGuiDrawData()
 {
 	if (!g_ImGuiInitialized) return;
+
+	// Multi-Viewport で別ウィンドウを描いた後も、メインウィンドウへ確実に描く。
+	SetRenderTargets(1, &g_pRTV, g_pDSV);
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-}
 
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		SetRenderTargets(1, &g_pRTV, g_pDSV);
+	}
+}

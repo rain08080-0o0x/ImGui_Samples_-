@@ -4,7 +4,7 @@
 static const int FPS = 60;
 static const float fFPS = static_cast<float>(FPS);
 
-static const wchar_t* APP_TITLE = L"ImGui SceneGame Sample";
+static const wchar_t* APP_TITLE = L"ImGui講座サンプル";
 
 static const int SCREEN_WIDTH = 1280;
 static const int SCREEN_HEIGHT = 720;

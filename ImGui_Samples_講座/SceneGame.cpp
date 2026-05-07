@@ -143,9 +143,7 @@ void SceneGame::Draw()
 	SetupRenderState();
 	ApplyCamera();
 	DrawSceneObjects();
-	// ImGui•`‰æ
-	
-	//DrawEditor();
+	DrawEditor();
 }
 
 void SceneGame::SetupRenderState() const
@@ -181,9 +179,19 @@ void SceneGame::DrawEditor()
 {
 	if (!ImGui::Begin("SceneGame Editor"))
 	{
-		ImGui::End();
+		int hp = 0;
+		// ƒoƒ‰ƒoƒ‰‚ÉŒ©‚¦‚é—á
+		ImGui::InputInt("HP", &hp);
+		ImGui::Text("Status: Poisoned"); // InputInt‚Æc‚Ìƒ‰ƒCƒ“‚ª‡‚í‚È‚¢
+
+		// ”ü‚µ‚­®—ñ‚³‚ê‚é—á
+		ImGui::InputInt("HP", &hp);
+		ImGui::LabelText("Status", "Poisoned"); // "Status"‚ª"HP"‚Æc‚É•À‚Ô
 		return;
 	}
+	ImGui::End();
+
+	ImGui::Begin("Main SceneGame Editor");
 
 	ImGui::TextUnformatted("Edit camera and transforms.");
 

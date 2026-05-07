@@ -69,6 +69,9 @@ HRESULT Texture::CreateResource(D3D11_TEXTURE2D_DESC& desc, const void* pData)
 	case DXGI_FORMAT_R32_TYPELESS:
 		srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 		break;
+	case DXGI_FORMAT_R24G8_TYPELESS:
+		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		break;
 	}
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
