@@ -10,10 +10,7 @@
 *.opensdf
 *.ipch
 
-# Visual Studio project/solution files (ignored by request)
-*.sln
-*.vcxproj
-*.vcxproj.filters
+
 
 # Build outputs
 Debug/
